@@ -46,7 +46,12 @@ if [ ! -f "$SERVER_DIR/srcds_run" ]; then
     exit 1
 fi
 
-echo "steam.inf не изменён (используется оригинальная версия)."
+STEAM_INF="$SERVER_DIR/csgo/steam.inf"
+if [ -f "$STEAM_INF" ]; then
+    sed -i 's/^ClientVersion=.*/ClientVersion=1575/' "$STEAM_INF"
+    sed -i 's/^ServerVersion=.*/ServerVersion=1575/' "$STEAM_INF"
+    echo "steam.inf: версия установлена в 1575 (совместимость с клиентом)."
+fi
 
 GSLT_ARG=""
 if [ -n "$GSLT" ]; then
