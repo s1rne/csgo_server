@@ -46,6 +46,9 @@ if [ ! -f "$SERVER_DIR/srcds_run" ]; then
     exit 1
 fi
 
+mkdir -p /home/steam/.steam/sdk32
+ln -sf /home/steam/steamcmd/linux32/steamclient.so /home/steam/.steam/sdk32/steamclient.so
+
 STEAM_INF="$SERVER_DIR/csgo/steam.inf"
 if [ -f "$STEAM_INF" ]; then
     sed -i 's/^ClientVersion=.*/ClientVersion=1575/' "$STEAM_INF"
@@ -72,6 +75,7 @@ exec "$SERVER_DIR/srcds_run" \
     -usercon \
     -nomaster \
     -norestart \
+    -insecure \
     -port "$PORT" \
     -tickrate "$TICKRATE" \
     -maxplayers_override "$MAXPLAYERS" \

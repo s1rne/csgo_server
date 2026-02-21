@@ -11,8 +11,10 @@ RUN dpkg --add-architecture i386 && \
         wget \
         ca-certificates \
         tar \
-        locales && \
+        locales \
+        bash && \
     rm -rf /var/lib/apt/lists/* && \
+    ln -sf /bin/bash /bin/sh && \
     useradd -m -s /bin/bash steam
 
 USER steam
