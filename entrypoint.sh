@@ -46,12 +46,7 @@ if [ ! -f "$SERVER_DIR/srcds_run" ]; then
     exit 1
 fi
 
-STEAM_INF="$SERVER_DIR/csgo/steam.inf"
-if [ -f "$STEAM_INF" ]; then
-    sed -i 's/^ClientVersion=.*/ClientVersion=2000522/' "$STEAM_INF"
-    sed -i 's/^ServerVersion=.*/ServerVersion=2000522/' "$STEAM_INF"
-    echo "steam.inf пропатчен для Legacy."
-fi
+echo "steam.inf не изменён (используется оригинальная версия)."
 
 GSLT_ARG=""
 if [ -n "$GSLT" ]; then
@@ -80,7 +75,7 @@ exec "$SERVER_DIR/srcds_run" \
     +game_mode "$GAME_MODE" \
     +mapgroup "$MAPGROUP" \
     +map "$MAP" \
-    +sv_lan 1 \
     +exec server.cfg \
+    +sv_lan 1 \
     $GSLT_ARG \
     -ip 0.0.0.0
