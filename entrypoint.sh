@@ -17,8 +17,9 @@ FPSMAX="${SRCDS_FPSMAX:-300}"
 
 mkdir -p "$SERVER_DIR"
 
+# --- 1. Установка CS:GO ---
 echo "=== CS:GO Legacy Server ==="
-echo "Проверка/установка серверных файлов..."
+echo "[1/4] Проверка серверных файлов..."
 
 ATTEMPTS=0
 MAX_ATTEMPTS=5
@@ -34,7 +35,7 @@ while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
         +quit
 
     if [ -f "$SERVER_DIR/srcds_run" ]; then
-        echo "Серверные файлы установлены."
+        echo "Серверные файлы OK."
         break
     fi
 
@@ -47,55 +48,61 @@ if [ ! -f "$SERVER_DIR/srcds_run" ]; then
     exit 1
 fi
 
+# --- 2. steamclient.so симлинк ---
 mkdir -p /home/steam/.steam/sdk32
 ln -sf /home/steam/steamcmd/linux32/steamclient.so /home/steam/.steam/sdk32/steamclient.so
 
+# --- 3. Патч версии для совместимости с клиентом ---
+echo "[2/4] Патч steam.inf..."
 STEAM_INF="$CSGO_DIR/steam.inf"
 if [ -f "$STEAM_INF" ]; then
     sed -i 's/^ClientVersion=.*/ClientVersion=1575/' "$STEAM_INF"
     sed -i 's/^ServerVersion=.*/ServerVersion=1575/' "$STEAM_INF"
-    echo "steam.inf: версия 1575."
+    echo "Версия: 1575."
 fi
 
-# --- Metamod:Source + SourceMod + NoLobbyReservation ---
+# --- 4. Metamod + SourceMod + NoLobbyReservation ---
+echo "[3/4] Проверка плагинов..."
 ADDONS_DIR="$CSGO_DIR/addons"
+SM_DIR="$ADDONS_DIR/sourcemod"
 
 if [ ! -d "$ADDONS_DIR/metamod" ]; then
     echo "Установка Metamod:Source..."
-    METAMOD_URL="https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz"
-    curl -sSL "$METAMOD_URL" | tar -xzf - -C "$CSGO_DIR"
-    echo "Metamod:Source установлен."
+    curl -sSL "https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz" \
+        | tar -xzf - -C "$CSGO_DIR"
 fi
 
-if [ ! -d "$ADDONS_DIR/sourcemod" ]; then
+if [ ! -d "$SM_DIR" ]; then
     echo "Установка SourceMod..."
-    SM_URL="https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6968-linux.tar.gz"
-    curl -sSL "$SM_URL" | tar -xzf - -C "$CSGO_DIR"
-    echo "SourceMod установлен."
+    curl -sSL "https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6968-linux.tar.gz" \
+        | tar -xzf - -C "$CSGO_DIR"
 fi
 
-PLUGIN_DIR="$ADDONS_DIR/sourcemod/plugins"
-SCRIPTING_DIR="$ADDONS_DIR/sourcemod/scripting"
-GAMEDATA_DIR="$ADDONS_DIR/sourcemod/gamedata"
+PLUGIN_DIR="$SM_DIR/plugins"
+GAMEDATA_DIR="$SM_DIR/gamedata"
+SCRIPTING_DIR="$SM_DIR/scripting"
+REPO_BASE="https://raw.githubusercontent.com/eldoradoel/NoLobbyReservation/master/csgo/addons/sourcemod"
+
+mkdir -p "$GAMEDATA_DIR"
 
 if [ ! -f "$PLUGIN_DIR/nolobbyreservation.smx" ]; then
     echo "Установка NoLobbyReservation..."
-    mkdir -p "$GAMEDATA_DIR"
 
-    curl -sSL "https://raw.githubusercontent.com/vanz666/NoLobbyReservation/master/nolobbyreservation.sp" \
-        -o "$SCRIPTING_DIR/nolobbyreservation.sp"
-
-    curl -sSL "https://raw.githubusercontent.com/vanz666/NoLobbyReservation/master/nolobbyreservation.games.txt" \
+    curl -sSL "$REPO_BASE/gamedata/nolobbyreservation.games.txt" \
         -o "$GAMEDATA_DIR/nolobbyreservation.games.txt"
+
+    curl -sSL "$REPO_BASE/scripting/nolobbyreservation.sp" \
+        -o "$SCRIPTING_DIR/nolobbyreservation.sp"
 
     cd "$SCRIPTING_DIR"
     chmod +x spcomp
     ./spcomp nolobbyreservation.sp -o "$PLUGIN_DIR/nolobbyreservation.smx"
-    echo "NoLobbyReservation скомпилирован и установлен."
+    echo "NoLobbyReservation OK."
 fi
 
-echo "Плагины готовы."
+echo "[4/4] Плагины готовы."
 
+# --- 5. Запуск ---
 GSLT_ARG=""
 if [ -n "$GSLT" ]; then
     GSLT_ARG="+sv_setsteamaccount $GSLT"
