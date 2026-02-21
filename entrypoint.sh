@@ -75,11 +75,23 @@ if [ ! -d "$ADDONS_DIR/sourcemod" ]; then
 fi
 
 PLUGIN_DIR="$ADDONS_DIR/sourcemod/plugins"
-if [ ! -f "$PLUGIN_DIR/NoLobbyReservation.smx" ]; then
+SCRIPTING_DIR="$ADDONS_DIR/sourcemod/scripting"
+GAMEDATA_DIR="$ADDONS_DIR/sourcemod/gamedata"
+
+if [ ! -f "$PLUGIN_DIR/nolobbyreservation.smx" ]; then
     echo "Установка NoLobbyReservation..."
-    curl -sSL "https://github.com/gflze/NoLobbyReservation/raw/master/csgo/addons/sourcemod/plugins/NoLobbyReservation.smx" \
-        -o "$PLUGIN_DIR/NoLobbyReservation.smx"
-    echo "NoLobbyReservation установлен."
+    mkdir -p "$GAMEDATA_DIR"
+
+    curl -sSL "https://raw.githubusercontent.com/vanz666/NoLobbyReservation/master/nolobbyreservation.sp" \
+        -o "$SCRIPTING_DIR/nolobbyreservation.sp"
+
+    curl -sSL "https://raw.githubusercontent.com/vanz666/NoLobbyReservation/master/nolobbyreservation.games.txt" \
+        -o "$GAMEDATA_DIR/nolobbyreservation.games.txt"
+
+    cd "$SCRIPTING_DIR"
+    chmod +x spcomp
+    ./spcomp nolobbyreservation.sp -o "$PLUGIN_DIR/nolobbyreservation.smx"
+    echo "NoLobbyReservation скомпилирован и установлен."
 fi
 
 echo "Плагины готовы."
