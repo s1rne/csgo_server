@@ -85,6 +85,5 @@ exec "$SERVER_DIR/srcds_run" \
     +mapgroup "$MAPGROUP" \
     +map "$MAP" \
     +exec server.cfg \
-    +sv_lan 1 \
     $GSLT_ARG \
     -ip 0.0.0.0
