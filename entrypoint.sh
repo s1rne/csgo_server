@@ -70,6 +70,8 @@ exec "$SERVER_DIR/srcds_run" \
     -game csgo \
     -console \
     -usercon \
+    -nomaster \
+    -norestart \
     -port "$PORT" \
     -tickrate "$TICKRATE" \
     -maxplayers_override "$MAXPLAYERS" \
@@ -78,6 +80,7 @@ exec "$SERVER_DIR/srcds_run" \
     +game_mode "$GAME_MODE" \
     +mapgroup "$MAPGROUP" \
     +map "$MAP" \
+    +sv_lan 1 \
     +exec server.cfg \
     $GSLT_ARG \
     -ip 0.0.0.0
