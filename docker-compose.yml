@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - csgo-data:/home/steam/csgo-dedicated
+      - /mnt/sdb4/csgo-server:/home/steam/csgo-dedicated
       - ./cfg/server.cfg:/home/steam/csgo-dedicated/csgo/cfg/server.cfg:ro
     environment:
       - SRCDS_TOKEN=${GSLT_TOKEN:-}
@@ -25,6 +25,3 @@ services:
       - SRCDS_LAN=0
       - SRCDS_FPSMAX=300
       - SRCDS_REGION=3
-
-volumes:
-  csgo-data:
