@@ -2,6 +2,7 @@
 set -e
 
 SERVER_DIR="/home/steam/csgo-server"
+CSGO_DIR="$SERVER_DIR/csgo"
 STEAMCMD="/home/steam/steamcmd/steamcmd.sh"
 
 PORT="${SRCDS_PORT:-27015}"
@@ -49,12 +50,39 @@ fi
 mkdir -p /home/steam/.steam/sdk32
 ln -sf /home/steam/steamcmd/linux32/steamclient.so /home/steam/.steam/sdk32/steamclient.so
 
-STEAM_INF="$SERVER_DIR/csgo/steam.inf"
+STEAM_INF="$CSGO_DIR/steam.inf"
 if [ -f "$STEAM_INF" ]; then
     sed -i 's/^ClientVersion=.*/ClientVersion=1575/' "$STEAM_INF"
     sed -i 's/^ServerVersion=.*/ServerVersion=1575/' "$STEAM_INF"
-    echo "steam.inf: версия установлена в 1575 (совместимость с клиентом)."
+    echo "steam.inf: версия 1575."
 fi
+
+# --- Metamod:Source + SourceMod + NoLobbyReservation ---
+ADDONS_DIR="$CSGO_DIR/addons"
+
+if [ ! -d "$ADDONS_DIR/metamod" ]; then
+    echo "Установка Metamod:Source..."
+    METAMOD_URL="https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz"
+    curl -sSL "$METAMOD_URL" | tar -xzf - -C "$CSGO_DIR"
+    echo "Metamod:Source установлен."
+fi
+
+if [ ! -d "$ADDONS_DIR/sourcemod" ]; then
+    echo "Установка SourceMod..."
+    SM_URL="https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6968-linux.tar.gz"
+    curl -sSL "$SM_URL" | tar -xzf - -C "$CSGO_DIR"
+    echo "SourceMod установлен."
+fi
+
+PLUGIN_DIR="$ADDONS_DIR/sourcemod/plugins"
+if [ ! -f "$PLUGIN_DIR/NoLobbyReservation.smx" ]; then
+    echo "Установка NoLobbyReservation..."
+    curl -sSL "https://github.com/gflze/NoLobbyReservation/raw/master/csgo/addons/sourcemod/plugins/NoLobbyReservation.smx" \
+        -o "$PLUGIN_DIR/NoLobbyReservation.smx"
+    echo "NoLobbyReservation установлен."
+fi
+
+echo "Плагины готовы."
 
 GSLT_ARG=""
 if [ -n "$GSLT" ]; then
