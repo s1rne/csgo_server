@@ -1,0 +1,37 @@
+# Systemd unit для CS:GO Legacy Server
+# Установка:
+#   sudo cp csgo-server.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable csgo-server
+#   sudo systemctl start csgo-server
+#
+# ВАЖНО: замените User, Group и пути на актуальные
+
+[Unit]
+Description=CS:GO Legacy Dedicated Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=csgo
+Group=csgo
+WorkingDirectory=/home/csgo/csgo_server/server
+ExecStart=/home/csgo/csgo_server/server/srcds_run \
+    -game csgo \
+    -console \
+    -usercon \
+    -port 27015 \
+    -tickrate 128 \
+    -maxplayers_override 12 \
+    +game_type 0 \
+    +game_mode 1 \
+    +mapgroup mg_active \
+    +map de_dust2 \
+    +exec server.cfg \
+    -ip 0.0.0.0
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
