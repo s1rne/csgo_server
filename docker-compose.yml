@@ -2,26 +2,21 @@ version: "3.8"
 
 services:
   csgo:
-    image: cm2network/csgo:latest
+    build: .
     container_name: csgo-server
     restart: unless-stopped
     network_mode: host
     volumes:
-      - /mnt/sdb4/csgo-server:/home/steam/csgo-dedicated
-      - ./cfg/server.cfg:/home/steam/csgo-dedicated/csgo/cfg/server.cfg:ro
+      - /mnt/sdb4/csgo-server:/home/steam/csgo-server
+      - ./cfg/server.cfg:/home/steam/csgo-server/csgo/cfg/server.cfg:ro
+      - ./cfg/autoexec.cfg:/home/steam/csgo-server/csgo/cfg/autoexec.cfg:ro
     environment:
       - SRCDS_TOKEN=${GSLT_TOKEN:-}
-      - SRCDS_RCONPW=changeme_rcon
-      - SRCDS_PW=
       - SRCDS_PORT=27015
-      - SRCDS_TV_PORT=27020
       - SRCDS_TICKRATE=128
-      - SRCDS_MAXPLAYERS=20
+      - SRCDS_MAXPLAYERS=12
       - SRCDS_STARTMAP=de_dust2
       - SRCDS_MAPGROUP=mg_active
       - SRCDS_GAMETYPE=0
       - SRCDS_GAMEMODE=1
-      - SRCDS_HOSTNAME=CSGO-Friends
-      - SRCDS_LAN=0
       - SRCDS_FPSMAX=300
-      - SRCDS_REGION=3
