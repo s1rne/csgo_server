@@ -1,8 +1,7 @@
-version: "3.8"
-
 services:
   csgo:
     build: .
+    user: "0:0"
     container_name: csgo-server
     restart: unless-stopped
     network_mode: host

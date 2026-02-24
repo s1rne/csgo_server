@@ -15,6 +15,21 @@ MAPGROUP="${SRCDS_MAPGROUP:-mg_active}"
 GSLT="${SRCDS_TOKEN:-}"
 FPSMAX="${SRCDS_FPSMAX:-300}"
 
+# Авто-фикс прав на примонтированной папке: запускаем контейнер от root,
+# чиним ownership и потом переключаемся на steam.
+if [ "$(id -u)" = "0" ] && [ "${RUN_AS_STEAM:-0}" != "1" ]; then
+    mkdir -p "$SERVER_DIR"
+    mkdir -p /home/steam/.steam
+
+    # Чиним права только если корень каталога не принадлежит steam.
+    if [ "$(stat -c '%u' "$SERVER_DIR" 2>/dev/null || echo 0)" != "1000" ]; then
+        echo "Фикс прав на $SERVER_DIR (root -> steam)..."
+        chown -R 1000:1000 "$SERVER_DIR" /home/steam/.steam || true
+    fi
+
+    exec su -s /bin/bash steam -c "RUN_AS_STEAM=1 /home/steam/entrypoint.sh"
+fi
+
 mkdir -p "$SERVER_DIR"
 
 # --- 1. Установка CS:GO ---
