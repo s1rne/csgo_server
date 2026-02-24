@@ -24,8 +24,12 @@ if [ "$(id -u)" = "0" ] && [ "${RUN_AS_STEAM:-0}" != "1" ]; then
     # Чиним права только если корень каталога не принадлежит steam.
     if [ "$(stat -c '%u' "$SERVER_DIR" 2>/dev/null || echo 0)" != "1000" ]; then
         echo "Фикс прав на $SERVER_DIR (root -> steam)..."
-        chown -R 1000:1000 "$SERVER_DIR" /home/steam/.steam || true
+        chown -R 1000:1000 "$SERVER_DIR" /home/steam/.steam
     fi
+
+    # Проверка, что пользователь steam действительно может писать в каталог данных.
+    su -s /bin/bash steam -c "touch '$SERVER_DIR/.write_test' && rm -f '$SERVER_DIR/.write_test'" \
+        || { echo "ОШИБКА: steam не может писать в $SERVER_DIR"; exit 1; }
 
     exec su -s /bin/bash steam -c "RUN_AS_STEAM=1 /home/steam/entrypoint.sh"
 fi
