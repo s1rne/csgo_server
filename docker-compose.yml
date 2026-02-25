@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./csgo-server-data:/home/steam/csgo-server
+      - /mnt/sdb4/csgo-server:/home/steam/csgo-server
       - ./cfg/server.cfg:/home/steam/csgo-server/csgo/cfg/server.cfg:ro
       - ./cfg/autoexec.cfg:/home/steam/csgo-server/csgo/cfg/autoexec.cfg:ro
     environment:
