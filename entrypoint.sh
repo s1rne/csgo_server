@@ -67,9 +67,9 @@ if [ ! -f "$SERVER_DIR/srcds_run" ]; then
     exit 1
 fi
 
-# --- 2. steamclient.so симлинк ---
-mkdir -p /home/steam/.steam/sdk32
-ln -sf /home/steam/steamcmd/linux32/steamclient.so /home/steam/.steam/sdk32/steamclient.so
+# --- 2. steamclient.so симлинк (не критично, если не удалось) ---
+mkdir -p "$HOME/.steam/sdk32" 2>/dev/null || true
+ln -sf /home/steam/steamcmd/linux32/steamclient.so "$HOME/.steam/sdk32/steamclient.so" 2>/dev/null || true
 
 # --- 3. Патч версии для совместимости с клиентом ---
 echo "[2/4] Патч steam.inf..."
