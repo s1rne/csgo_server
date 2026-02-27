@@ -13,6 +13,7 @@ GAME_TYPE="${SRCDS_GAMETYPE:-0}"
 GAME_MODE="${SRCDS_GAMEMODE:-1}"
 MAPGROUP="${SRCDS_MAPGROUP:-mg_active}"
 GSLT="${SRCDS_TOKEN:-}"
+WORKSHOP_AUTHKEY="${SRCDS_WORKSHOP_AUTHKEY:-}"
 FPSMAX="${SRCDS_FPSMAX:-300}"
 
 # Авто-фикс прав на примонтированной папке: запускаем контейнер от root,
@@ -127,6 +128,11 @@ if [ -n "$GSLT" ]; then
     GSLT_ARG="+sv_setsteamaccount $GSLT"
 fi
 
+AUTHKEY_ARG=""
+if [ -n "$WORKSHOP_AUTHKEY" ]; then
+    AUTHKEY_ARG="-authkey $WORKSHOP_AUTHKEY"
+fi
+
 echo ""
 echo "=== Запуск CS:GO Legacy Server ==="
 echo "Карта:    $MAP"
@@ -145,6 +151,7 @@ exec "$SERVER_DIR/srcds_run" \
     -port "$PORT" \
     -tickrate "$TICKRATE" \
     -maxplayers_override "$MAXPLAYERS" \
+    $AUTHKEY_ARG \
     +fps_max "$FPSMAX" \
     +game_type "$GAME_TYPE" \
     +game_mode "$GAME_MODE" \

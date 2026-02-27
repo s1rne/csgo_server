@@ -11,6 +11,7 @@ services:
       - ./cfg/autoexec.cfg:/home/steam/csgo-server/csgo/cfg/autoexec.cfg:ro
     environment:
       - SRCDS_TOKEN=${GSLT_TOKEN:-}
+      - SRCDS_WORKSHOP_AUTHKEY=${STEAM_WEB_API_KEY:-}
       - SRCDS_PORT=27015
       - SRCDS_TICKRATE=128
       - SRCDS_MAXPLAYERS=12
